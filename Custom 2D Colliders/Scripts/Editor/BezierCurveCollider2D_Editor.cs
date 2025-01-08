@@ -77,7 +77,19 @@ public class BezierCurveCollider_Editor : Editor
             bc.drawCurve();
         }
     }
-
+    Vector3 CreateFreeMoveHandleControlPoint(int a_index)
+    {
+        Vector3 newPos = Handles.FreeMoveHandle(bc.transform.position + (Vector3)bc.controlPoints[a_index], .25f, Vector3.zero, Handles.ConeHandleCap);
+        bc.controlPoints[a_index] = newPos - bc.transform.position;
+        return newPos;
+    }
+    Vector3 CreateFreeMoveHandleHandlerPoint(int a_index)
+    {
+        Vector3 newPos = Handles.FreeMoveHandle(bc.transform.position + (Vector3)bc.handlerPoints[a_index], .5f, Vector3.zero, Handles.ConeHandleCap);
+        bc.handlerPoints[a_index] = newPos - bc.transform.position;
+        return newPos;
+    }
+    [System.Obsolete]
     void OnSceneGUI()
     {
         GUI.changed = false;
@@ -86,9 +98,8 @@ public class BezierCurveCollider_Editor : Editor
         // manage control points
         for (int i = 0; i < bc.controlPoints.Count; i++)
         {
-            Vector3 start = bc.controlPoints[i];
-            Vector3 newPos = Handles.FreeMoveHandle(bc.controlPoints[i], Quaternion.identity, .25f, Vector3.zero, Handles.ConeHandleCap);
-            bc.controlPoints[i] = newPos;
+            Vector3 start = bc.transform.position + (Vector3)bc.controlPoints[i];
+            Vector3 newPos = CreateFreeMoveHandleControlPoint(i);
 
             // if the control point was moved.. offset the joining handler points
             if (!start.Equals(newPos))
@@ -132,7 +143,7 @@ public class BezierCurveCollider_Editor : Editor
         {
             for (int i = 0; i < bc.handlerPoints.Count; i++)
             {
-                bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
+                CreateFreeMoveHandleHandlerPoint(i);
             }
         }
         else
@@ -143,7 +154,7 @@ public class BezierCurveCollider_Editor : Editor
                 // if there are only 2 control points
                 if (bc.controlPoints.Count == 2)
                 {
-                    bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
+                    CreateFreeMoveHandleHandlerPoint(i);
                 }
                 // if there are more than 2 control points
                 else if (bc.controlPoints.Count > 2)
@@ -151,14 +162,13 @@ public class BezierCurveCollider_Editor : Editor
                     // no additional calculations required for the first and last handler points
                     if (i == 0 || i == bc.handlerPoints.Count - 1)
                     {
-                        bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
+                        CreateFreeMoveHandleHandlerPoint(i);
                     }
                     else
                     {
                         // changes for the rest of the handler points in the middle
                         Vector3 start = bc.handlerPoints[i];
-                        Vector3 newPos = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
-                        bc.handlerPoints[i] = newPos;
+                        Vector3 newPos = CreateFreeMoveHandleHandlerPoint(i);
 
                         if (!start.Equals(newPos))
                         {
@@ -212,16 +222,16 @@ public class BezierCurveCollider_Editor : Editor
         // draw a line from the control point to handler points
         if (bc.handlerPoints.Count == 2)
         {
-            Handles.DrawLine(bc.handlerPoints[0], bc.controlPoints[0]);
-            Handles.DrawLine(bc.handlerPoints[1], bc.controlPoints[1]);
+            Handles.DrawLine(bc.transform.position + (Vector3)bc.handlerPoints[0], bc.transform.position + (Vector3)bc.controlPoints[0]);
+            Handles.DrawLine(bc.transform.position + (Vector3)bc.handlerPoints[1], bc.transform.position + (Vector3)bc.controlPoints[1]);
         }
         else
         {
             int c = 0;
             for (int i = 0; i < bc.handlerPoints.Count; i = i + 2)
             {
-                Handles.DrawLine(bc.handlerPoints[i], bc.controlPoints[c]);
-                Handles.DrawLine(bc.handlerPoints[i + 1], bc.controlPoints[c + 1]);
+                Handles.DrawLine(bc.transform.position + (Vector3)bc.handlerPoints[i], bc.transform.position + (Vector3)bc.controlPoints[c]);
+                Handles.DrawLine(bc.transform.position + (Vector3)bc.handlerPoints[i + 1], bc.transform.position + (Vector3)bc.controlPoints[c + 1]);
                 c++;
             }
         }
