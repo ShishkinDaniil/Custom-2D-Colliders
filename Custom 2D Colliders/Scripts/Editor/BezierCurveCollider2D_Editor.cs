@@ -29,8 +29,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
-[CustomEditor (typeof(BezierCurveCollider2D))]
-public class BezierCurveCollider_Editor : Editor {
+[CustomEditor(typeof(BezierCurveCollider2D))]
+public class BezierCurveCollider_Editor : Editor
+{
 
     BezierCurveCollider2D bc;
 
@@ -86,7 +87,7 @@ public class BezierCurveCollider_Editor : Editor {
         for (int i = 0; i < bc.controlPoints.Count; i++)
         {
             Vector3 start = bc.controlPoints[i];
-            Vector3 newPos = Handles.FreeMoveHandle(bc.controlPoints[i], Quaternion.identity, .25f, Vector3.zero, Handles.ConeCap);
+            Vector3 newPos = Handles.FreeMoveHandle(bc.controlPoints[i], Quaternion.identity, .25f, Vector3.zero, Handles.ConeHandleCap);
             bc.controlPoints[i] = newPos;
 
             // if the control point was moved.. offset the joining handler points
@@ -95,7 +96,7 @@ public class BezierCurveCollider_Editor : Editor {
                 Vector2 offset = newPos - start;
 
                 // if there are only 2 control points
-                if(bc.controlPoints.Count == 2)
+                if (bc.controlPoints.Count == 2)
                 {
                     bc.handlerPoints[i] += offset;
                 }
@@ -103,19 +104,19 @@ public class BezierCurveCollider_Editor : Editor {
                 else if (bc.controlPoints.Count > 2)
                 {
                     // if you moved the first control point
-                    if(i == 0)
+                    if (i == 0)
                     {
                         bc.handlerPoints[0] += offset; // offset the handle
                     }
                     // if you moved the last control point
                     else if (i == bc.controlPoints.Count - 1)
                     {
-                        bc.handlerPoints[bc.handlerPoints.Count-1] += offset; // offset the handle
+                        bc.handlerPoints[bc.handlerPoints.Count - 1] += offset; // offset the handle
                     }
                     // if you moved one of the other control points in the middle
                     else
                     {
-                        int ind= (i * 2) - 1;
+                        int ind = (i * 2) - 1;
                         bc.handlerPoints[ind] += offset; // offset the top handle
                         bc.handlerPoints[++ind] += offset; // offset the bottom handle
 
@@ -131,7 +132,7 @@ public class BezierCurveCollider_Editor : Editor {
         {
             for (int i = 0; i < bc.handlerPoints.Count; i++)
             {
-                bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeCap);
+                bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
             }
         }
         else
@@ -142,7 +143,7 @@ public class BezierCurveCollider_Editor : Editor {
                 // if there are only 2 control points
                 if (bc.controlPoints.Count == 2)
                 {
-                    bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeCap);
+                    bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
                 }
                 // if there are more than 2 control points
                 else if (bc.controlPoints.Count > 2)
@@ -150,13 +151,13 @@ public class BezierCurveCollider_Editor : Editor {
                     // no additional calculations required for the first and last handler points
                     if (i == 0 || i == bc.handlerPoints.Count - 1)
                     {
-                        bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeCap);
+                        bc.handlerPoints[i] = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
                     }
                     else
                     {
                         // changes for the rest of the handler points in the middle
                         Vector3 start = bc.handlerPoints[i];
-                        Vector3 newPos = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeCap);
+                        Vector3 newPos = Handles.FreeMoveHandle(bc.handlerPoints[i], Quaternion.identity, .5f, Vector3.zero, Handles.ConeHandleCap);
                         bc.handlerPoints[i] = newPos;
 
                         if (!start.Equals(newPos))
@@ -168,7 +169,7 @@ public class BezierCurveCollider_Editor : Editor {
                             {
                                 int cp = (i + 1) / 2; // get the control point for this handle
                                 // calc angle of the top handle
-                                Vector2 dir = bc.handlerPoints[i] - bc.controlPoints[cp]; 
+                                Vector2 dir = bc.handlerPoints[i] - bc.controlPoints[cp];
                                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                                 angle = (angle + 360) % 360;
 
@@ -217,10 +218,10 @@ public class BezierCurveCollider_Editor : Editor {
         else
         {
             int c = 0;
-            for (int i = 0; i < bc.handlerPoints.Count; i = i+2)
+            for (int i = 0; i < bc.handlerPoints.Count; i = i + 2)
             {
                 Handles.DrawLine(bc.handlerPoints[i], bc.controlPoints[c]);
-                Handles.DrawLine(bc.handlerPoints[i+1], bc.controlPoints[c+1]);
+                Handles.DrawLine(bc.handlerPoints[i + 1], bc.controlPoints[c + 1]);
                 c++;
             }
         }

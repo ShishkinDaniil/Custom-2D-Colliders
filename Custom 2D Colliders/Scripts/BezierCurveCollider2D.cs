@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 [AddComponentMenu("Physics 2D/Bezier Curve Collider 2D")]
 
-[RequireComponent(typeof(EdgeCollider2D))]
+[RequireComponent(typeof(EdgeCollider2D), typeof(LineRenderer))]
 public class BezierCurveCollider2D : MonoBehaviour {
 
     public List<Vector2> controlPoints, handlerPoints;
@@ -50,6 +50,8 @@ public class BezierCurveCollider2D : MonoBehaviour {
 
     [HideInInspector]
     public EdgeCollider2D edge;
+
+    public LineRenderer lineRenderer;
     List<Vector2> pts;
     
 
@@ -88,9 +90,15 @@ public class BezierCurveCollider2D : MonoBehaviour {
         pts.Clear();
 
         edge = GetComponent<EdgeCollider2D>();
+        lineRenderer = GetComponent<LineRenderer>();
         if (edge == null)
         {
             gameObject.AddComponent<EdgeCollider2D>();
+        }
+
+        if (lineRenderer == null)
+        {
+            gameObject.AddComponent<LineRenderer>();
         }
 
         if (controlPoints.Count == 2)
@@ -106,6 +114,11 @@ public class BezierCurveCollider2D : MonoBehaviour {
             }
         }
 
+        lineRenderer.positionCount = edge.points.Length;
+        for (int i = 0; i < edge.points.Length; i++)
+        {
+            lineRenderer.SetPosition(i, edge.points[i]);
+        }
 
         edge.points = pts.ToArray();
 
