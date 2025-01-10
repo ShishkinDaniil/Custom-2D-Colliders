@@ -115,13 +115,23 @@ public class BezierCurveCollider2D : MonoBehaviour
             }
         }
 
-        lineRenderer.positionCount = edge.points.Length;
-        for (int i = 0; i < edge.points.Length; i++)
-        {
-            lineRenderer.SetPosition(i, edge.points[i]);
-        }
-        edge.points = pts.ToArray();
+        // Смещение для верхнего или нижнего края
+        float offset = lineRenderer.startWidth / 2;
+        Vector2 offsetVector = new Vector2(0, offset); // Смещение вверх
 
+        Vector2[] colliderPoints = new Vector2[pts.Count];
+        for (int i = 0; i < pts.Count; i++)
+        {
+            colliderPoints[i] = pts[i] + offsetVector; // Применяем смещение
+        }
+
+        edge.points = colliderPoints;
+
+        lineRenderer.positionCount = pts.Count;
+        for (int i = 0; i < pts.Count; i++)
+        {
+            lineRenderer.SetPosition(i, pts[i]);
+        }
     }
 
     void drawSegment(Vector3 cPt1, Vector3 cPt2, Vector3 hPt1, Vector3 hPt2)
