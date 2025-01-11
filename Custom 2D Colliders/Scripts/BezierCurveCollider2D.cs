@@ -121,6 +121,7 @@ public class BezierCurveCollider2D : MonoBehaviour
             lineRenderer.SetPosition(i, edge.points[i]);
         }
         edge.points = pts.ToArray();
+        edge.edgeRadius = lineRenderer.startWidth / 2;
 
     }
 
